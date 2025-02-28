@@ -14,6 +14,9 @@ public class Actuation extends SubsystemBase {
   private Servo actuator1 = new Servo(1);
 
   public Actuation() {
+    actuator.set(0.2);
+    actuator1.set(0.2);
+
 
   }
 

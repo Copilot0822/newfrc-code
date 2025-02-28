@@ -15,6 +15,7 @@ public class L1 extends Command {
   //private final ExampleSubsystem m_subsystem;
   private final Elevator1 m_elevator;
   private final PivotArm m_PivotArm;
+  
 
 
 
@@ -45,7 +46,7 @@ public class L1 extends Command {
   @Override
   public void execute() {
     if(m_elevator.getRealPostion()<2 && !done){
-      m_PivotArm.goTo(-1.25);
+      m_PivotArm.goTo(-1.15);
       done = true;
 
     }

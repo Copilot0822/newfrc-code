@@ -131,9 +131,11 @@ public class AutoAlignLeft extends Command {
         
         m_Driving.setRotation(output);
 
-        if(output < 0.01 && outputVelocityX < 0.01 && outputVelocityY < 0.01){
-          done = true;
+        if(outputVelocityX < 0.03 && outputVelocityY < 0.03){
+          done = true;   
         }
+
+        
         //System.out.println( "VX:"+outputVelocityX+" VY:"+outputVelocityY + " output:"+ output);
 
 
@@ -157,6 +159,7 @@ public class AutoAlignLeft extends Command {
     m_Driving.setX(0);
     m_Driving.setY(0);
     m_Driving.setRotation(0);
+    System.out.println("Sigma");
   }
 
 

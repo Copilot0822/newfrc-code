@@ -20,6 +20,8 @@ public class L2 extends Command {
   private final PivotArm m_PivotArm;
   private final EndEffector m_Effector;
   private boolean done;
+  private double position;
+  private double ArmPosition;
   //private final Command outake;
   
 
@@ -29,11 +31,13 @@ public class L2 extends Command {
    *
    * @param subsystem The subsystem used by this command.
    */
-  public L2(Elevator1 elevator, PivotArm pivot, EndEffector effector) {
+  public L2(Elevator1 elevator, PivotArm pivot, EndEffector effector, double Position, double arm) {
     //m_subsystem = subsystem;
+    ArmPosition = arm;
     m_elevator = elevator;
     m_PivotArm = pivot;
     m_Effector = effector;
+    position = Position;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
     addRequirements(pivot);
@@ -43,8 +47,8 @@ public class L2 extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevator.gotolevel(12);
-    m_PivotArm.goTo(3.125);
+    m_elevator.gotolevel(position);
+    m_PivotArm.goTo(ArmPosition);
     done = false;
 
     //outake = new Outake(m_Effector, m_PivotArm);
@@ -74,6 +78,7 @@ public class L2 extends Command {
   public void end(boolean interrupted) {
     //m_Effector.runed(0);
     //m_PivotArm.goTo(2.75);
+    System.out.println("sigma");
   }
 
   // Returns true when the command should end.

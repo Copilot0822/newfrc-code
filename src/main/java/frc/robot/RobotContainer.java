@@ -82,13 +82,15 @@ public class RobotContainer {
 
     /* Path follower */
    private final SendableChooser<Command> autoChooser;
-   //private final SendableChooser<Command> autoChooser2;
+   private final SendableChooser<Command> autoChooser2;
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser("1");
-        //autoChooser2 = AutoBuilder.buildAutoChooser("2");
+        autoChooser2 = AutoBuilder.buildAutoChooser("2");
         //SmartDashboard.putData("Auto Mode", autoChooser);
         NamedCommands.registerCommand("Leftaim", new AutoAlignLeft(photon, driving));
         NamedCommands.registerCommand("Rightaim", new AutoAlignRight(photon, driving));
+        NamedCommands.registerCommand("L1", new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));
+
 
         configureBindings();
     }
@@ -119,10 +121,14 @@ public class RobotContainer {
         joystick.a().toggleOnTrue(new Outake(effector, pivot));
         joystick.start().toggleOnTrue(new ActuateUp(actuation));
         joystick.back().toggleOnTrue(new ActuateDown(actuation));
-        joystick.povRight().onTrue(new ArmUp(pivot));
-        joystick.povLeft().onTrue(new ArmDown(pivot));
-        joystick.povUp().onTrue(new L2(elevator, pivot, effector));
-        joystick.povDown().toggleOnTrue(new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));
+        //joystick.povRight().onTrue(new ArmUp(pivot));
+        //joystick.povLeft().onTrue(new ArmDown(pivot));
+        joystick.povRight().onTrue(new L2(elevator, pivot, effector, 12, 3.125));//L2
+
+        joystick.povLeft().onTrue(new L2(elevator, pivot, effector, 19, 3.125));//L3
+        joystick.povUp().onTrue(new L2(elevator, pivot, effector, 31.5, 3.125));//L4
+
+        joystick.povDown().toggleOnTrue(new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));//L1
         
         //joystick.povLeft().toggleOnTrue(new RunIntake(effector));
         
@@ -167,7 +173,7 @@ public class RobotContainer {
         /* Run the path selected from the auto chooser */
         //return autoChooser.getSelected();
         //return null;
-        return autoChooser.getSelected().andThen(new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector)));
+        return autoChooser.getSelected().andThen((new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector, 12, 3.125))).andThen(new Outake(effector, pivot))).andThen(autoChooser2.getSelected());
         
     }
 }

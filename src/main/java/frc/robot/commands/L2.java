@@ -19,7 +19,7 @@ public class L2 extends Command {
   private final Elevator1 m_elevator;
   private final PivotArm m_PivotArm;
   private final EndEffector m_Effector;
-  private boolean hasCoral;
+  private boolean done;
   //private final Command outake;
   
 
@@ -37,14 +37,14 @@ public class L2 extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
     addRequirements(pivot);
-    addRequirements(effector);
+    //addRequirements(effector);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_elevator.gotolevel(11);
-    //m_PivotArm.goTo(2.75);
+    m_elevator.gotolevel(12);
+    m_PivotArm.goTo(3.125);
 
     //outake = new Outake(m_Effector, m_PivotArm);
   }
@@ -52,27 +52,29 @@ public class L2 extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_elevator.getVelocity() < 0.8){
-      m_PivotArm.goTo(1.35);
+    // if(m_elevator.getVelocity() < 0.8){
+    //   m_PivotArm.goTo(1.35);
+    
 
-    }
-    else{
-      m_PivotArm.goTo(2.75);
-    }
+    // }
+    // else{
+    //   m_PivotArm.goTo(2.75);
+    // }
 
+    
    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_Effector.runed(0);
+    //m_Effector.runed(0);
     //m_PivotArm.goTo(2.75);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return hasCoral;
+    return false;
   }
 }

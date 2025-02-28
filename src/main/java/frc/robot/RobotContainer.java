@@ -43,6 +43,7 @@ import frc.robot.subsystems.Driving;
 import frc.robot.subsystems.Elevator1;
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.PhotonVision;
+
 import frc.robot.subsystems.PivotArm;
 
 public class RobotContainer {
@@ -74,15 +75,16 @@ public class RobotContainer {
     private final Actuation actuation = new Actuation();
     private final Driving driving = new Driving(drivetrain);
     private final PhotonVision photon = new PhotonVision();
+    //private final PhotonVisionRear photonRear = new PhotonVisionRear();
 
     
     
 
     /* Path follower */
-   //private final SendableChooser<Command> autoChooser;
+   private final SendableChooser<Command> autoChooser;
 
     public RobotContainer() {
-        //autoChooser = AutoBuilder.buildAutoChooser("Tests");
+        autoChooser = AutoBuilder.buildAutoChooser("Tests");
         //SmartDashboard.putData("Auto Mode", autoChooser);
         NamedCommands.registerCommand("Leftaim", new AutoAlignLeft(photon, driving));
         NamedCommands.registerCommand("Rightaim", new AutoAlignRight(photon, driving));
@@ -112,10 +114,15 @@ public class RobotContainer {
 
 
 
-        //joystick.b().toggleOnTrue(new Intake(effector, pivot));
+        joystick.b().toggleOnTrue(new Intake(effector, pivot));
         joystick.a().toggleOnTrue(new Outake(effector, pivot));
         joystick.start().toggleOnTrue(new ActuateUp(actuation));
         joystick.back().toggleOnTrue(new ActuateDown(actuation));
+        joystick.povRight().onTrue(new ArmUp(pivot));
+        joystick.povLeft().onTrue(new ArmDown(pivot));
+        joystick.povUp().onTrue(new L2(elevator, pivot, effector));
+        joystick.povDown().toggleOnTrue(new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));
+        
         //joystick.povLeft().toggleOnTrue(new RunIntake(effector));
         
         // Note that X is defined as forward according to WPILib convention,
@@ -157,7 +164,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         /* Run the path selected from the auto chooser */
-        //return autoChooser.getSelected();
-        return null;
+        return autoChooser.getSelected().andThen(new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector)));
+        //return null;
     }
 }

@@ -28,15 +28,15 @@ public class Intake extends Command {
     m_Arm = pivotArm;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(endEffector);
-    addRequirements(pivotArm);
+    //addRequirements(pivotArm);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_EndEffector.runed(0.3);
+    m_EndEffector.runed(-0.15);
     hasCoral = false;
-    m_Arm.goTo(1.7);
+    //m_Arm.goTo(1.7);
 
   }
 
@@ -53,7 +53,7 @@ public class Intake extends Command {
   public void end(boolean interrupted) {
     m_EndEffector.runed(0);
 
-    m_Arm.goTo(2.75);
+    //m_Arm.goTo(2.75);
   }
 
   // Returns true when the command should end.

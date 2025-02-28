@@ -38,12 +38,12 @@ public class Outake extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    if(m_PivotArm.getPosition() < 3){
+    //if(m_PivotArm.getPosition() < 3){
       m_EndEffector.runed(0.8);
-    }
-    else{
-      m_EndEffector.runed(-0.3);
-    }
+    //}
+    //else{
+     // m_EndEffector.runed(-0.3);
+    //}
     //m_EndEffector.runed(-0.15);
     hasCoral = false;
     //m_PivotArm.goTo(1.75);

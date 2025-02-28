@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.ClosedLoopConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,7 +28,7 @@ public class Climber extends SubsystemBase {
   private SparkClosedLoopController pid = m_Leader.getClosedLoopController();
 
   private CommandXboxController m_Controller = new CommandXboxController(Constants.OperatorConstants.kDriverControllerPort);
-
+  private com.revrobotics.AnalogInput m_Input;
 
   public Climber() {
     SparkMaxConfig config = new SparkMaxConfig();
@@ -45,6 +46,8 @@ public class Climber extends SubsystemBase {
     config.closedLoopRampRate(0.5);
 
     m_Leader.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+    m_Input = m_Leader.getAnalog();
+    
 
   }
 
@@ -77,18 +80,23 @@ public class Climber extends SubsystemBase {
     // This method will be called once per scheduler run
 
     //double out = (m_Controller.getLeftTriggerAxis() - m_Controller.getRightTriggerAxis()) * multiplier;
+    if(m_Input.getPosition()<3){
+      if(m_Controller.getLeftTriggerAxis() < 0.15 && m_Controller.getRightTriggerAxis() < 0.15){
+        m_Leader.set(0);
+      }
+      else{
+        double out = (m_Controller.getLeftTriggerAxis() - m_Controller.getRightTriggerAxis());
+        //pid.setReference(out, ControlType.kVelocity);
+  
+        m_Leader.set(out);
+  
+  
+      }
 
-    if(m_Controller.getLeftTriggerAxis() < 0.15 && m_Controller.getRightTriggerAxis() < 0.15){
-      m_Leader.set(0);
     }
-    else{
-      double out = (m_Controller.getLeftTriggerAxis() - m_Controller.getRightTriggerAxis());
-      //pid.setReference(out, ControlType.kVelocity);
+    else{m_Leader.set(0);}
 
-      m_Leader.set(out);
-
-
-    }
+    
 
     //pid.setReference(out, ControlType.kVelocity);
 

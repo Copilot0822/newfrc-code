@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class PhotonVision extends SubsystemBase {
   PhotonTrackedTarget bestTarget;
@@ -79,7 +80,7 @@ public class PhotonVision extends SubsystemBase {
       //SmartDashboard.putNumber("pitch", target.getPitch());
       //System.out.println("getYaw:"+target.getYaw());
       //return target.getYaw();
-      return 5+Units.radiansToDegrees(target.getBestCameraToTarget().getRotation().getX());
+      return Units.radiansToDegrees(target.getBestCameraToTarget().getRotation().getX());
     }
     else{
       //System.out.println("skew:-1");

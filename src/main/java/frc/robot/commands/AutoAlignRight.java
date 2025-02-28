@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Driving;
@@ -66,6 +67,8 @@ public class AutoAlignRight extends Command {
   public void initialize() {
     m_Driving.setMode(true);
     m_Driving.setRotation(0);
+    m_Driving.setX(0);
+    m_Driving.setY(0);
     mode = false;
     outputVelocityX = 0;
 
@@ -86,35 +89,35 @@ public class AutoAlignRight extends Command {
     if(m_PhotonVision.getHas() && m_PhotonVision.getAmbiguity() < 0.8){
       double yaw = m_PhotonVision.getYaw();
 
-      double scale1 = Math.pow(10, 2);
+      double scaleRotation = Math.pow(10, Constants.scaleRotation);
       //System.out.println(Math.floor((-yaw)*scale1)/scale1);
 
-      double output = Math.floor((-yaw)*scale1)/scale1;
+      double output = Math.floor((-((yaw)-Constants.rotationalrightoffset)/4)*scaleRotation)/scaleRotation;
       //double output = (-yaw/2);
 
       //double outputVelocityX;
       //double outputVelocityY;
-      if(m_PhotonVision.getAmbiguity()<0.5){
+      if(m_PhotonVision.getAmbiguity()<Constants.poseAmbigMax){
 
-        if(output>0.1){
+        if(output>Constants.maxRotationalOutput){
           output = 0.1;
         }
-        else if(output <-0.1){
+        else if(output <-1*Constants.maxRotationalOutput){
           output = -0.1;
         }
-        if(Math.abs(output)<0.01&& !mode){
+        if(Math.abs(output)<Constants.modeChangeLimit&& !mode){
           mode = true;
           
         }
         if(mode){
-          double scale = Math.pow(10, 4);
-          outputVelocityX = Math.floor((m_PhotonVision.getX()-0.33)*scale)/scale/3;
+          double scale = Math.pow(10, Constants.scaleTranslation);
+          outputVelocityX = Math.floor((m_PhotonVision.getX()-Constants.rightForwardOffset)*scale)/scale/3;
          //outputVelocityY = (m_PhotonVision.getY()-0.125)/15;
-          outputVelocityY = Math.floor((m_PhotonVision.getY()-0.125)*scale)/scale/3;
+          outputVelocityY = Math.floor((m_PhotonVision.getY()-Constants.rightOffset)*scale)/scale/3;
           //outputVelocityY = m_PhotonVision.getY(); 
           
-          Math.max(-0.5, Math.min(outputVelocityX, 0.5));
-          Math.max(-0.5, Math.min(outputVelocityY, 0.5));
+          Math.max(-1*Constants.maxTranslationalOutput, Math.min(outputVelocityX, Constants.maxTranslationalOutput));
+          Math.max(-1*Constants.maxTranslationalOutput, Math.min(outputVelocityY, Constants.maxTranslationalOutput));
         }else{
           outputVelocityX = 0;
           outputVelocityY = 0;
@@ -144,6 +147,8 @@ public class AutoAlignRight extends Command {
   public void end(boolean interrupted) {
 
     m_Driving.setMode(false);
+    m_Driving.setX(0);
+    m_Driving.setY(0);
     m_Driving.setRotation(0);
   }
 

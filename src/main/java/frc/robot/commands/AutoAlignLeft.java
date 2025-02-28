@@ -61,6 +61,7 @@ public class AutoAlignLeft extends Command {
   private boolean mode = false;
   private double outputVelocityX;
   private double outputVelocityY;
+  private boolean done;
 
   // Called when the command is initially scheduled.
   @Override
@@ -73,6 +74,7 @@ public class AutoAlignLeft extends Command {
     outputVelocityX = 0;
 
     outputVelocityY = 0;
+    done = false;
 
     //m_StopWatch.start();
 
@@ -128,6 +130,10 @@ public class AutoAlignLeft extends Command {
         m_Driving.setY(outputVelocityY);
         
         m_Driving.setRotation(output);
+
+        if(output < 0.01 && outputVelocityX < 0.01 && outputVelocityY < 0.01){
+          done = true;
+        }
         //System.out.println( "VX:"+outputVelocityX+" VY:"+outputVelocityY + " output:"+ output);
 
 
@@ -139,7 +145,8 @@ public class AutoAlignLeft extends Command {
     
     
     //SmartDashboard.putNumber("sigma", x);
-   } 
+   }
+   
   }
 
   // Called once the command ends or is interrupted.
@@ -156,6 +163,6 @@ public class AutoAlignLeft extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 }

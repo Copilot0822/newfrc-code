@@ -122,6 +122,15 @@ public class Driving extends SubsystemBase {
       else{
         drivetrainer.setControl(drive.withRotationalRate(0));
       }
+
+      if(Math.sqrt(joystick.getLeftY()*joystick.getLeftY() + joystick.getLeftX()*joystick.getLeftX())>0.13){
+        drivetrainer.setControl(drive.withVelocityY(-joystick.getLeftX() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)));
+        drivetrainer.setControl(drive.withVelocityX(-joystick.getLeftY() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)));
+      }
+      else{
+        drivetrainer.setControl(drive.withVelocityY(0));
+        drivetrainer.setControl(drive.withVelocityX(0));
+      }
       //drivetrainer.setControl(drive.withVelocityX(-joystick.getLeftY() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)));
 
       //drivetrainer.setControl(drive.withVelocityY(-joystick.getLeftX() * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)));

@@ -45,6 +45,7 @@ public class L2 extends Command {
   public void initialize() {
     m_elevator.gotolevel(12);
     m_PivotArm.goTo(3.125);
+    done = false;
 
     //outake = new Outake(m_Effector, m_PivotArm);
   }
@@ -52,7 +53,10 @@ public class L2 extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // if(m_elevator.getVelocity() < 0.8){
+     if(m_elevator.getVelocity() < 0.4 && Math.abs(m_PivotArm.getPosition() - m_PivotArm.getRealPostion()) < 0.5){
+      done = true;
+
+     }
     //   m_PivotArm.goTo(1.35);
     
 
@@ -75,6 +79,6 @@ public class L2 extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 }

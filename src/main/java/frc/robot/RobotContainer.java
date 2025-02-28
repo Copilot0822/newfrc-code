@@ -82,9 +82,10 @@ public class RobotContainer {
 
     /* Path follower */
    private final SendableChooser<Command> autoChooser;
-
+   //private final SendableChooser<Command> autoChooser2;
     public RobotContainer() {
-        autoChooser = AutoBuilder.buildAutoChooser("Tests");
+        autoChooser = AutoBuilder.buildAutoChooser("1");
+        //autoChooser2 = AutoBuilder.buildAutoChooser("2");
         //SmartDashboard.putData("Auto Mode", autoChooser);
         NamedCommands.registerCommand("Leftaim", new AutoAlignLeft(photon, driving));
         NamedCommands.registerCommand("Rightaim", new AutoAlignRight(photon, driving));
@@ -164,7 +165,9 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         /* Run the path selected from the auto chooser */
-        return autoChooser.getSelected().andThen(new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector)));
+        //return autoChooser.getSelected();
         //return null;
+        return autoChooser.getSelected().andThen(new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector)));
+        
     }
 }

@@ -18,6 +18,8 @@ public class Outake extends Command {
   private final PivotArm m_PivotArm;
   //private final Elevator1 m_Elevator1;
   private boolean hasCoral = false;
+  private boolean done = false;
+  private double time;
 
   /**
    * Creates a new ExampleCommand.
@@ -40,12 +42,14 @@ public class Outake extends Command {
   public void initialize() {
     //if(m_PivotArm.getPosition() < 3){
       m_EndEffector.runed(0.5);
+      //time = System.currentTimeMillis();
     //}
     //else{
      // m_EndEffector.runed(-0.3);
     //}
     //m_EndEffector.runed(-0.15);
     hasCoral = false;
+    done = false;
     //m_PivotArm.goTo(1.75);
 
 
@@ -56,8 +60,14 @@ public class Outake extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(!m_EndEffector.getSwitch()){
+    if(!m_EndEffector.getSwitch() && !hasCoral){
+      time = System.currentTimeMillis();
       hasCoral = true;
+      
+    }
+    if(hasCoral && (System.currentTimeMillis()-time > 800)){
+      done = true;
+
     }
     if(Math.abs(m_PivotArm.getPosition() - (m_PivotArm.getRealPostion())) <0.25){
       //m_EndEffector.runed(-0.2);
@@ -74,6 +84,6 @@ public class Outake extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return hasCoral;
+    return done;
   }
 }

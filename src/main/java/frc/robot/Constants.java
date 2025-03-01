@@ -32,14 +32,14 @@ public final class Constants {
 
   // Auto Aim Constants
   public static final double leftOffset = -0.17;
-  public static final double leftForwardOffest = 0.4;
+  public static final double leftForwardOffest = 0.3;
 
   public static final double rightOffset = 0.145;
   public static final double rightForwardOffset = 0.4;
 
   public static final double poseAmbigMax = 0.5;
   public static final double rotationalrightoffset = 2.3;
-  public static final double rotationalleftoffset = 1.25;
+  public static final double rotationalleftoffset = -1.25;
   public static final double maxRotationalOutput = 0.1;
   public static final double maxTranslationalOutput = 0.5;
   public static final double modeChangeLimit = 0.01;

@@ -47,6 +47,7 @@ public class AutoAlignLeft extends Command {
   public AutoAlignLeft(PhotonVision photonVision, Driving driving) {
     //m_subsystem = subsystem;
     //drivetrain = drivetrain;
+    
     m_PhotonVision = photonVision;
     m_Driving = driving;
     
@@ -62,6 +63,8 @@ public class AutoAlignLeft extends Command {
   private double outputVelocityX;
   private double outputVelocityY;
   private boolean done;
+  private double time;
+  private double timeout;
 
   // Called when the command is initially scheduled.
   @Override
@@ -75,6 +78,7 @@ public class AutoAlignLeft extends Command {
 
     outputVelocityY = 0;
     done = false;
+    time = System.currentTimeMillis();
 
     //m_StopWatch.start();
 
@@ -94,7 +98,7 @@ public class AutoAlignLeft extends Command {
       double scaleRotation = Math.pow(10, Constants.scaleRotation);
       //System.out.println(Math.floor((-yaw)*scale1)/scale1);
 
-      double output = Math.floor((-((yaw)-Constants.rotationalleftoffset)/4)*scaleRotation)/scaleRotation;
+      double output = Math.floor((-((yaw)-Constants.rotationalleftoffset)*1)*scaleRotation)/scaleRotation;
       //double output = (-yaw/2);
 
       //double outputVelocityX;
@@ -131,7 +135,7 @@ public class AutoAlignLeft extends Command {
         
         m_Driving.setRotation(output);
 
-        if(outputVelocityX < 0.03 && outputVelocityY < 0.03){
+        if(System.currentTimeMillis()-time > 4000){
           done = true;   
         }
 

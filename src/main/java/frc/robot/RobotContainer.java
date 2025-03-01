@@ -59,10 +59,10 @@ public class RobotContainer {
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);*/
 
-    //private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
-   // private final CommandXboxController andrew = new CommandXboxController(1);
+    private final CommandXboxController andrew = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -82,10 +82,10 @@ public class RobotContainer {
 
     /* Path follower */
    private final SendableChooser<Command> autoChooser;
-   private final SendableChooser<Command> autoChooser2;
+   //private final SendableChooser<Command> autoChooser2;
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser("1");
-        autoChooser2 = AutoBuilder.buildAutoChooser("2");
+        //autoChooser2 = AutoBuilder.buildAutoChooser("2");
         //SmartDashboard.putData("Auto Mode", autoChooser);
         NamedCommands.registerCommand("Leftaim", new AutoAlignLeft(photon, driving));
         NamedCommands.registerCommand("Rightaim", new AutoAlignRight(photon, driving));
@@ -97,10 +97,10 @@ public class RobotContainer {
 
     private void configureBindings() {
 
-        //andrew.povUp().onTrue(new ElevatorUp(elevator));
-        //andrew.povDown().onTrue(new ElevatorDown(elevator));
-        //andrew.povRight().onTrue(new ArmUp(pivot));
-        //andrew.povLeft().onTrue(new ArmDown(pivot));
+        andrew.povUp().onTrue(new ElevatorUp(elevator));
+        andrew.povDown().onTrue(new ElevatorDown(elevator));
+        andrew.povRight().onTrue(new ArmUp(pivot));
+        andrew.povLeft().onTrue(new ArmDown(pivot));
         //andrew.povUp().onTrue(new L4(elevator));
         //joystick.povRight().onTrue(new L3(elevator));
         //joystick.povDown().toggleOnTrue(new L2(elevator, pivot, effector));
@@ -123,10 +123,10 @@ public class RobotContainer {
         joystick.back().toggleOnTrue(new ActuateDown(actuation));
         //joystick.povRight().onTrue(new ArmUp(pivot));
         //joystick.povLeft().onTrue(new ArmDown(pivot));
-        joystick.povRight().onTrue(new L2(elevator, pivot, effector, 12, 3.125));//L2
+        joystick.povLeft().onTrue(new L2(elevator, pivot, effector, 5, -2.6));//L2
 
-        joystick.povLeft().onTrue(new L2(elevator, pivot, effector, 19, 3.125));//L3
-        joystick.povUp().onTrue(new L2(elevator, pivot, effector, 31.5, 3.125));//L4
+        joystick.povRight().onTrue(new L2(elevator, pivot, effector, 12.8, -2.6));//L3
+        joystick.povUp().onTrue(new L2(elevator, pivot, effector, 31.5, -3.1));//L4
 
         joystick.povDown().toggleOnTrue(new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));//L1
         
@@ -166,14 +166,14 @@ public class RobotContainer {
         //joystick.y().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         
 
-        //drivetrain.registerTelemetry(logger::telemeterize);
+        drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
         /* Run the path selected from the auto chooser */
         //return autoChooser.getSelected();
         //return null;
-        return autoChooser.getSelected().andThen((new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector, 12, 3.125))).andThen(new Outake(effector, pivot))).andThen(autoChooser2.getSelected());
-        
+        //return autoChooser.getSelected().andThen((new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector, 12, 3.125))).andThen(new Outake(effector, pivot).andThen(new Intake(effector, pivot).alongWith(new L1(elevator, pivot)))));
+        return autoChooser.getSelected();
     }
 }

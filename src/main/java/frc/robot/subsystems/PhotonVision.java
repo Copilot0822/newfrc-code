@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 //import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -152,6 +153,8 @@ public class PhotonVision extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putNumber("Xoff", getX());
+    SmartDashboard.putNumber("Yoff", getY());
     //double x = getYaw();
     //SmartDashboard.putNumber("oh", x);
 

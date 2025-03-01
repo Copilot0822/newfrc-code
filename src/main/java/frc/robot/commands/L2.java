@@ -23,6 +23,7 @@ public class L2 extends Command {
   private double position;
   private double ArmPosition;
   //private final Command outake;
+  private double time;
   
 
 
@@ -41,6 +42,7 @@ public class L2 extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
     addRequirements(pivot);
+    time = System.currentTimeMillis();
     //addRequirements(effector);
   }
 
@@ -57,7 +59,7 @@ public class L2 extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-     if(m_elevator.getVelocity() < 0.4 && Math.abs(m_PivotArm.getPosition() - m_PivotArm.getRealPostion()) < 0.5){
+     if(System.currentTimeMillis()-time > 4000){
       done = true;
 
      }

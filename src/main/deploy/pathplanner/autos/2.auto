@@ -9,24 +9,30 @@
           "data": {
             "commands": [
               {
-                "type": "named",
-                "data": {
-                  "name": "L1"
-                }
-              },
-              {
                 "type": "path",
                 "data": {
                   "pathName": "2Path"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "3Path"
           }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

@@ -15,6 +15,7 @@ public class L1 extends Command {
   //private final ExampleSubsystem m_subsystem;
   private final Elevator1 m_elevator;
   private final PivotArm m_PivotArm;
+  private double time;
   
 
 
@@ -31,13 +32,15 @@ public class L1 extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
     addRequirements(pivotArm);
+    //time = System.currentTimeMillis();
+
   }
   private boolean done;
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     //m_elevator.gotolevel(2);
-    m_elevator.gotolevel(0.04);
+    m_elevator.gotolevel(1);
     done = false;
 
   }

@@ -22,7 +22,7 @@ public final class Constants {
   public static final int Elevator_Leader_Id = 30;
   public static final int Elevator_Follower_Id = 31;
    
-  public static final double MaxMotorPosition = 31.5;
+  public static final double MaxMotorPosition = 31.8;
   public static final double MinMotorPosition = 0.5;
   public static final int elevatorLimitSwitchPort = 0;
 
@@ -31,7 +31,7 @@ public final class Constants {
   public static final int armId = 50;
 
   // Auto Aim Constants
-  public static final double leftOffset = -0.20;
+  public static final double leftOffset = -0.19;
   public static final double leftForwardOffest = 0.3;
 
   public static final double rightOffset = 0.145;

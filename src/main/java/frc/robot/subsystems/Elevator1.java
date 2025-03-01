@@ -39,7 +39,7 @@ public class Elevator1 extends SubsystemBase {
     //HomeLimitSwitchUnpressedTrigger.onFalse(StopElevator());
     HomeLimitSwitchUnpressed.getAsBoolean();
     //ElevatorLeader.set(0.2);
-    ElevatorLeader.setPosition(0);
+    //ElevatorLeader.setPosition(0);
     ElevatorFollower.setControl(new Follower(ElevatorLeader.getDeviceID(), false));
     //ElevatorLeader.setControl(m_request.withPosition(setPosition));
     

@@ -37,7 +37,7 @@ import frc.robot.commands.L4;
 //import frc.robot.commands.L4;
 import frc.robot.commands.Outake;
 import frc.robot.commands.RunIntake;
-import frc.robot.generated.TunerConstants;
+import frc.robot.generated.TunerConstants_other;
 import frc.robot.subsystems.Actuation;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -49,7 +49,7 @@ import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.PivotArm;
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxSpeed = TunerConstants_other.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     //  Setting up bindings for necessary control of the swerve drive platform 
@@ -66,7 +66,7 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController andrew = new CommandXboxController(1);
 
-  public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+  public final CommandSwerveDrivetrain drivetrain = TunerConstants_other.createDrivetrain();
 
     //private final Arm arm = new Arm();
     //private final Arm1 armed = new Arm1();
@@ -87,13 +87,13 @@ public class RobotContainer {
 
     /* Path follower */
    private final SendableChooser<Command> autoChooser;
-   //private final SendableChooser<Command> autoChooser2;
+   private final SendableChooser<Command> autoChooser2;
     public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser("1");
-        //autoChooser2 = AutoBuilder.buildAutoChooser("2");
+        autoChooser2 = AutoBuilder.buildAutoChooser("2");
         //SmartDashboard.putData("Auto Mode", autoChooser);
-        NamedCommands.registerCommand("Leftaim", new AutoAlignLeft(photon, driving));
-        NamedCommands.registerCommand("Rightaim", new AutoAlignRight(photon, driving));
+        //NamedCommands.registerCommand("Leftaim", new AutoAlignLeft(photon, driving));
+        //NamedCommands.registerCommand("Rightaim", new AutoAlignRight(photon, driving));
         NamedCommands.registerCommand("L1", new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));
 
          //CHOREO AUTOS
@@ -106,6 +106,7 @@ public class RobotContainer {
          autoChooserC.addRoutine("left auto", autoRoutines::autoLeft);
          autoChooserC.addRoutine("right auto", autoRoutines::autoRight);
          
+        NamedCommands.registerCommand("Intake", new Intake(effector, pivot));
 
         configureBindings();
     }
@@ -136,12 +137,15 @@ public class RobotContainer {
         joystick.a().toggleOnTrue(new Outake(effector, pivot));
         joystick.start().toggleOnTrue(new ActuateUp(actuation));
         joystick.back().toggleOnTrue(new ActuateDown(actuation));
+
+        andrew.b().whileTrue(new RunIntake(effector, 0.3));
+        andrew.a().whileTrue(new RunIntake(effector, -0.3));
         //joystick.povRight().onTrue(new ArmUp(pivot));
         //joystick.povLeft().onTrue(new ArmDown(pivot));
-        joystick.povLeft().onTrue(new ElevatorToPosition(elevator, pivot, effector, 5, -2.6));//L2
+        joystick.povLeft().onTrue(new ElevatorToPosition(elevator, pivot, effector, 8.42, -2.6));//L2
 
-        joystick.povRight().onTrue(new ElevatorToPosition(elevator, pivot, effector, 12.8, -2.6));//L3
-        joystick.povUp().onTrue(new ElevatorToPosition(elevator, pivot, effector, 31.5, -3.1));//L4
+        joystick.povRight().onTrue(new ElevatorToPosition(elevator, pivot, effector, 16.72, -2.6));//L3
+        joystick.povUp().onTrue(new ElevatorToPosition(elevator, pivot, effector, 31.62, -2.7));//L4 2.7
 
         joystick.povDown().toggleOnTrue(new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));//L1
         
@@ -191,5 +195,11 @@ public class RobotContainer {
         //return autoChooser.getSelected().andThen((new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector, 12, 3.125))).andThen(new Outake(effector, pivot).andThen(new Intake(effector, pivot).alongWith(new L1(elevator, pivot)))));
         // return autoChooser.getSelected();
         return autoChooserC.selectedCommand();
+
+        //from updated commit. i want it on record that I , personally, hate it why don't we have a proper autos class???
+        // return autoChooser.getSelected().andThen((new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector, 31.5, -2.9))).andThen(new Outake(effector, pivot).andThen(new L1(elevator, pivot)))).andThen(new L1(elevator, pivot).andThen((new Intake(effector, pivot))));
+
+        //return new L1(elevator, pivot).andThen(autoChooser2.getSelected());
+        //return autoChooser.getSelected();
     }
 }

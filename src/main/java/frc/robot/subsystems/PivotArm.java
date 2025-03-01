@@ -46,7 +46,7 @@ public class PivotArm extends SubsystemBase {
 
     pivotConfig = new SparkMaxConfig();
 
-    pivotConfig.closedLoop.outputRange(-0.1, 0.1);
+    pivotConfig.closedLoop.outputRange(-0.2, 0.2);
     pivotConfig.idleMode(IdleMode.kBrake);
 
     pivotConfig.closedLoop.pidf(0.3, 0, 0, 0);//p was 0.2

@@ -15,6 +15,7 @@ public class L1 extends Command {
   //private final ExampleSubsystem m_subsystem;
   private final Elevator1 m_elevator;
   private final PivotArm m_PivotArm;
+  private double time;
   
   private boolean done;
 
@@ -32,12 +33,14 @@ public class L1 extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(elevator);
     addRequirements(pivotArm);
+    //time = System.currentTimeMillis();
+
   }
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
     //m_elevator.gotolevel(2);
-    m_elevator.gotolevel(1.55);
+    m_elevator.gotolevel(1);
     done = false;
 
   }
@@ -45,8 +48,8 @@ public class L1 extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(m_elevator.getRealPostion()<2 && !done){
-      m_PivotArm.goTo(-6.7);
+    if(m_elevator.getRealPostion()<5 && !done){
+      m_PivotArm.goTo(-6.5);
       done = true;
 
     }

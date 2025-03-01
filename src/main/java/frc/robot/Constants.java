@@ -31,7 +31,7 @@ public final class Constants {
   public static final int armId = 50;
 
   // Auto Aim Constants
-  public static final double leftOffset = -0.17;
+  public static final double leftOffset = -0.20;
   public static final double leftForwardOffest = 0.3;
 
   public static final double rightOffset = 0.145;

@@ -13,15 +13,18 @@ public class RunIntake extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   //private final ExampleSubsystem m_subsystem;
   private final EndEffector m_EndEffector;
+  private final double in;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public RunIntake(EndEffector endEffector) {
+  public RunIntake(EndEffector endEffector, double out) {
     //m_subsystem = subsystem;
     m_EndEffector = endEffector;
+    in = out;
+
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(endEffector);
   }
@@ -29,7 +32,7 @@ public class RunIntake extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_EndEffector.runed(0.2);
+    m_EndEffector.runed(in);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

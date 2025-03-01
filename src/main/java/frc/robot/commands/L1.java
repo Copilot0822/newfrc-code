@@ -16,6 +16,7 @@ public class L1 extends Command {
   private final Elevator1 m_elevator;
   private final PivotArm m_PivotArm;
   
+  private boolean done;
 
 
 
@@ -32,7 +33,6 @@ public class L1 extends Command {
     addRequirements(elevator);
     addRequirements(pivotArm);
   }
-  private boolean done;
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {

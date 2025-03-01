@@ -12,6 +12,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,7 +30,7 @@ import frc.robot.commands.ElevatorDown;
 import frc.robot.commands.ElevatorUp;
 import frc.robot.commands.Intake;
 import frc.robot.commands.L1;
-import frc.robot.commands.L2;
+import frc.robot.commands.ElevatorToPosition;
 import frc.robot.commands.L3;
 import frc.robot.commands.L4;
 //import frc.robot.commands.L3;
@@ -50,14 +52,14 @@ public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-    /* Setting up bindings for necessary control of the swerve drive platform 
+    //  Setting up bindings for necessary control of the swerve drive platform 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate * 0.15) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);*/
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
@@ -77,7 +79,10 @@ public class RobotContainer {
     private final PhotonVision photon = new PhotonVision();
     //private final PhotonVisionRear photonRear = new PhotonVisionRear();
 
-    
+        /* Path follower FOR CHOREO */
+    private final AutoFactory autoFactory;
+    private final AutoRoutines autoRoutines;
+    private final AutoChooser autoChooserC = new AutoChooser();
     
 
     /* Path follower */
@@ -91,6 +96,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("Rightaim", new AutoAlignRight(photon, driving));
         NamedCommands.registerCommand("L1", new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));
 
+         //CHOREO AUTOS
+         autoFactory = drivetrain.createAutoFactory();
+         autoRoutines = new AutoRoutines(autoFactory, effector, pivot, elevator);
+         /*add auto routines */
+         SmartDashboard.putData("Auto Chooser", autoChooserC);
+         autoChooserC.addRoutine("test", autoRoutines::testPath);
+         autoChooserC.addRoutine("just move", autoRoutines::basicAuto);
 
         configureBindings();
     }
@@ -123,10 +135,10 @@ public class RobotContainer {
         joystick.back().toggleOnTrue(new ActuateDown(actuation));
         //joystick.povRight().onTrue(new ArmUp(pivot));
         //joystick.povLeft().onTrue(new ArmDown(pivot));
-        joystick.povLeft().onTrue(new L2(elevator, pivot, effector, 5, -2.6));//L2
+        joystick.povLeft().onTrue(new ElevatorToPosition(elevator, pivot, effector, 5, -2.6));//L2
 
-        joystick.povRight().onTrue(new L2(elevator, pivot, effector, 12.8, -2.6));//L3
-        joystick.povUp().onTrue(new L2(elevator, pivot, effector, 31.5, -3.1));//L4
+        joystick.povRight().onTrue(new ElevatorToPosition(elevator, pivot, effector, 12.8, -2.6));//L3
+        joystick.povUp().onTrue(new ElevatorToPosition(elevator, pivot, effector, 31.5, -3.1));//L4
 
         joystick.povDown().toggleOnTrue(new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));//L1
         
@@ -134,14 +146,14 @@ public class RobotContainer {
         
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        /*drivetrain.setDefaultCommand(
+        drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
-        );*/
+        );
 
         //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         /*joystick.b().whileTrue(drivetrain.applyRequest(() ->
@@ -174,6 +186,7 @@ public class RobotContainer {
         //return autoChooser.getSelected();
         //return null;
         //return autoChooser.getSelected().andThen((new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector, 12, 3.125))).andThen(new Outake(effector, pivot).andThen(new Intake(effector, pivot).alongWith(new L1(elevator, pivot)))));
-        return autoChooser.getSelected();
+        // return autoChooser.getSelected();
+        return autoChooserC.selectedCommand();
     }
 }

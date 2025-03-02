@@ -1,92 +1,71 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import frc.robot.subsystems.Elevator1;
 import frc.robot.subsystems.EndEffector;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.PivotArm;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 //the command formerly known as "L2". 
-//I have changed it because changing functionality without changing the name is a slippery slope to programming hell
+//I have changed it because changing functionality without changing the name is bad practice
 
-/** An example command that uses an example subsystem. */
 public class ElevatorToPosition extends Command {
+  //unsure if necessary, not experimenting at a comp
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  //private final ExampleSubsystem m_subsystem;
+
   private final Elevator1 m_elevator;
   private final PivotArm m_PivotArm;
-  private final EndEffector m_Effector;
+  private final EndEffector m_Effector; 
+  
   private boolean done;
   private double position;
   private double ArmPosition;
-  //private final Command outake;
   private double time;
   
 
-
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
   public ElevatorToPosition(Elevator1 elevator, PivotArm pivot, EndEffector effector, double Position, double arm) {
-    //m_subsystem = subsystem;
     ArmPosition = arm;
     m_elevator = elevator;
     m_PivotArm = pivot;
-    m_Effector = effector;
+    m_Effector = effector; //not used, delete maybe
     position = Position;
-    // Use addRequirements() here to declare subsystem dependencies.
+
+
+    //subsystem dependencies.
     addRequirements(elevator);
     addRequirements(pivot);
-    time = System.currentTimeMillis();
-    //addRequirements(effector);
   }
 
-  // Called when the command is initially scheduled.
+  //go to position on arm and pivot 
   @Override
   public void initialize() {
+    time = System.currentTimeMillis(); 
+    //this line was under the constructor, which worked because all commands are made ne w when called in bot container
+    //that's not a great way to go about it. I've moved it here
+    //the functionality should be the same, but now we can construct and use the same command mutliple times
+    //while refreshing the timer
+
     m_elevator.gotolevel(position);
     m_PivotArm.goTo(ArmPosition);
     done = false;
-
-    //outake = new Outake(m_Effector, m_PivotArm);
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
+  //just waiting for a time?? wouldn't it be more efficient to go by elevator pos?? 
+  //TODO: ask ben why it's like this
   @Override
   public void execute() {
+    //a clever little replacement for a timer. wait until
      if(System.currentTimeMillis()-time > 4000){
       done = true;
-
      }
-    //   m_PivotArm.goTo(1.35);
-    
-
-    // }
-    // else{
-    //   m_PivotArm.goTo(2.75);
-    // }
-
-    
-   
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    //m_Effector.runed(0);
-    //m_PivotArm.goTo(2.75);
+    //I'm only leaving this print line because it's for the drivers benefit I presume, so they're used to that
+    //TODO: change after comp to something less nonsensical
     System.out.println("sigma");
   }
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return done;

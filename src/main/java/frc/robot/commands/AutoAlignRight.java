@@ -1,14 +1,9 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants_other;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Driving;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.PhotonVision;
 
 import static edu.wpi.first.units.Units.Rotation;
@@ -26,66 +21,53 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
+//TODO: why are so many of these imports completely unused. this should be cleaned up
 
 
-
-/** An example command that uses an example subsystem. */
 public class AutoAlignRight extends Command {
+  //unsure if necessary, don't change at comp
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  //private final ExampleSubsystem m_subsystem;
-  //public CommandSwerveDrivetrain drivetrains = TunerConstants.createDrivetrain(); // My drivetrain
-  //private StopWatch m_StopWatch;
-  private final PhotonVision m_PhotonVision;
-  private final Driving m_Driving;
-  //MotionMagicController rotationPID;
 
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
-  public AutoAlignRight(PhotonVision photonVision, Driving driving) {
-    //m_subsystem = subsystem;
-    //drivetrain = drivetrain;
-    m_PhotonVision = photonVision;
-    m_Driving = driving;
-    
-    // Use addRequirements() here to declare subsystem dependencies.
-    //addRequirements(subsystem);
-    //addRequirements(drivetrain);
-    addRequirements(photonVision);
-    addRequirements(driving);
-    
-    
-  }
+  private final PhotonVision m_PhotonVision;
+  private final Driving m_Driving;  
+
   private boolean mode = false;
   private double outputVelocityX;
   private double outputVelocityY;
-
-  // Called when the command is initially scheduled.
+  private boolean done;
+  private double time;
+  
+  public AutoAlignRight(PhotonVision photonVision, Driving driving) {
+    m_PhotonVision = photonVision;
+    m_Driving = driving;
+    
+    //subsystem dependencies.
+    addRequirements(photonVision);
+    addRequirements(driving);
+  }
+ 
+  
   @Override
   public void initialize() {
     m_Driving.setMode(true);
     m_Driving.setRotation(0);
     m_Driving.setX(0);
     m_Driving.setY(0);
-    mode = false;
-    outputVelocityX = 0;
 
+    mode = false;
+
+    outputVelocityX = 0;
     outputVelocityY = 0;
 
-    //m_StopWatch.start();
-
-    //rotationPID = new MotionMagicController(0.019, 0, 0, 0, 0, 0);
-    
+    done = false;
+    time = System.currentTimeMillis();
   }
 
- 
-  // Called every time the scheduler runs while the command is scheduled.
+
   @Override
   public void execute() {
-    //MotionMagicController rotationPID;
 
+    //TODO: I'm not messing with this. Ben should document it
     if(m_PhotonVision.getHas() && m_PhotonVision.getAmbiguity() < 0.8){
       double yaw = m_PhotonVision.getYaw();
 
@@ -130,19 +112,22 @@ public class AutoAlignRight extends Command {
         m_Driving.setRotation(output);
         //System.out.println( "VX:"+outputVelocityX+" VY:"+outputVelocityY + " output:"+ output);
 
-
     }
     else{
       m_Driving.setRotation(0);
     }
-       
-    
-    
-    //SmartDashboard.putNumber("sigma", x);
-   } 
+
+    //timer. needs to be here so we don't shoot it into the bot accidentally
+    if(System.currentTimeMillis()-time > 10000){
+      done = true;   
+    } 
+  
+  } 
+
+   
+
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
 
@@ -152,10 +137,9 @@ public class AutoAlignRight extends Command {
     m_Driving.setRotation(0);
   }
 
-
-  // Returns true when the command should end.
+  //command either interrupted or ends on timer
   @Override
   public boolean isFinished() {
-    return false;
+    return done;
   }
 }

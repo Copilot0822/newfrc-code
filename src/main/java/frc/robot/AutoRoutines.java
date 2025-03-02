@@ -18,6 +18,7 @@ import frc.robot.commands.ElevatorToPosition;
 import frc.robot.commands.L1;
 import frc.robot.commands.AutoAlignLeft;
 import frc.robot.commands.AutoAlignRight;
+import frc.robot.commands.Outake;
 
 import frc.robot.subsystems.EndEffector;
 import frc.robot.subsystems.PivotArm;
@@ -30,20 +31,22 @@ public class AutoRoutines {
     public boolean startLeft;
     private Intake _intake;
     private ElevatorToPosition _level4;
+    private ElevatorToPosition _level2;
     private L1 _level1;
     private AutoAlignLeft _alignLeft;
     private AutoAlignRight _alignRight;
-
+    private Outake _outake;
 
 
     public AutoRoutines(AutoFactory factory, EndEffector f, PivotArm p, Elevator1 e, Driving d, PhotonVision v) {
         m_factory = factory;
         _intake = new Intake(f, p);
-        //TODO: double check these numbers w Ben
-        _level4 = new ElevatorToPosition(e, p, f, 31.5, -3.1);
+        _level4 = new ElevatorToPosition(e, p, f, 31.62, -2.7);
+        _level2 = new ElevatorToPosition(e, p, f, 8.42, -2.6);
         _level1 = new L1(e, p);
         _alignLeft = new AutoAlignLeft(v, d);
         _alignRight = new AutoAlignRight(v, d);
+        _outake = new Outake(f, p);
     }
 
     public AutoRoutine testPath() {
@@ -65,6 +68,7 @@ public class AutoRoutines {
         return routine;
     }
 
+    //starting from left, go to closest side of reef, go to feeder station, to new closest side of reef
     public AutoRoutine autoLeft() {
         final AutoRoutine routine = m_factory.newRoutine("left auto");
         final AutoTrajectory path_start = routine.trajectory("startLto6");
@@ -75,21 +79,22 @@ public class AutoRoutines {
             path_start.resetOdometry()
             .andThen(path_start.cmd())
             .andThen(_alignLeft) //NOTE: This may throw off the Choreo alignment. but I think it's worth at least making one point
-            .andThen(_level4)
-            .andThen(_intake) //TODO: is that the right command?? i really don't think it is
+            .alongWith(_level4) //NOTE: attempting to raise and align simultaneously. if behaviour strange return to "andThen"
+            .andThen(_outake) 
             .andThen(_level1)
             .andThen(feeder_6.cmd())
             .andThen(_intake)
             .andThen(reef_5.cmd())
             .andThen(_alignLeft) //see line 77 comment
             .andThen(_level4)
-            .andThen(_intake)
+            .andThen(_outake)
             .andThen(_level1)
         );
 
         return routine;
     }
 
+    //starting from right, go to closest side of reef, go to feeder station, to new closest side of reef
     public AutoRoutine autoRight() {
         final AutoRoutine routine = m_factory.newRoutine("right auto");
         final AutoTrajectory path_start = routine.trajectory("startRto2");
@@ -99,20 +104,39 @@ public class AutoRoutines {
         routine.active().onTrue(
             path_start.resetOdometry()
             .andThen(path_start.cmd())
-            .andThen(_alignRight) //see line 77 comment
-            .andThen(_level4)
-            .andThen(_intake) //TODO: is that the right command??
+            .andThen(_alignRight) //see line 81 comment. ALSO SWITCH TO LEFT
+            .alongWith(_level4) //see line 82 comment
+            .andThen(_outake) 
             .andThen(_level1)
             .andThen(feeder_2.cmd())
             .andThen(_intake)
             .andThen(reef_3.cmd())
-            .andThen(_alignLeft) //see line 77 comment
-            .andThen(_level4)
-            .andThen(_intake)
+            .andThen(_alignLeft) //see line 81 comment
+            .alongWith(_level4) //see line 82 comment
+            .andThen(_outake)
             .andThen(_level1)
         );
 
         return routine;
     }
     
+    //same as autoRight to start, only to level 2 to score, and stop after intaking at feeder station
+    public AutoRoutine testRight() {
+        final AutoRoutine routine = m_factory.newRoutine("right test auto");
+        final AutoTrajectory path_start = routine.trajectory("startRto2");
+        final AutoTrajectory feeder_2 = routine.trajectory("2toR");
+ 
+        routine.active().onTrue(
+            path_start.resetOdometry()
+            .andThen(path_start.cmd())
+            .andThen(_alignRight) //see line 81 comment. SWTICH TO LEFT
+            .alongWith(_level2) //see line 82 comment
+            .andThen(_outake) 
+            .andThen(_level1)
+            .andThen(feeder_2.cmd())
+            .andThen(_intake)
+        );
+
+        return routine;
+    }
 }

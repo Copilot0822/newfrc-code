@@ -130,6 +130,7 @@ public class RobotContainer {
 
         joystick.povRight().onTrue(new L2(elevator, pivot, effector, 16.72, -2.6));//L3
         joystick.povUp().onTrue(new L2(elevator, pivot, effector, 31.62, -2.7));//L4 2.7
+        joystick.x().onTrue(new L2(elevator, pivot, effector, 31.5, -2.75));
 
         joystick.povDown().toggleOnTrue(new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));//L1
         

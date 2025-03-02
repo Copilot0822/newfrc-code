@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
@@ -12,6 +8,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,11 +26,7 @@ import frc.robot.commands.ElevatorDown;
 import frc.robot.commands.ElevatorUp;
 import frc.robot.commands.Intake;
 import frc.robot.commands.L1;
-import frc.robot.commands.L2;
-import frc.robot.commands.L3;
-import frc.robot.commands.L4;
-//import frc.robot.commands.L3;
-//import frc.robot.commands.L4;
+import frc.robot.commands.ElevatorToPosition;
 import frc.robot.commands.Outake;
 import frc.robot.commands.RunIntake;
 import frc.robot.generated.TunerConstants_other;
@@ -50,24 +44,23 @@ public class RobotContainer {
     private double MaxSpeed = TunerConstants_other.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-    /* Setting up bindings for necessary control of the swerve drive platform 
+    //  Setting up bindings for necessary control of the swerve drive platform 
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate * 0.15) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);*/
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+    //TODO: fix at some point. "joystick" is driver and "andrew" is operator. rename logically
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController andrew = new CommandXboxController(1);
 
   public final CommandSwerveDrivetrain drivetrain = TunerConstants_other.createDrivetrain();
 
-    //private final Arm arm = new Arm();
-    //private final Arm1 armed = new Arm1();
     private final Elevator1 elevator = new Elevator1();
     private final PivotArm pivot = new PivotArm();
     private final EndEffector effector = new EndEffector();
@@ -75,89 +68,93 @@ public class RobotContainer {
     private final Actuation actuation = new Actuation();
     private final Driving driving = new Driving(drivetrain);
     private final PhotonVision photon = new PhotonVision();
-    //private final PhotonVisionRear photonRear = new PhotonVisionRear();
 
-    
-    
+    /* Path follower FOR CHOREO */
+    private final AutoFactory autoFactory;
+    private final AutoRoutines autoRoutines;
+    private final AutoChooser autoChooserC = new AutoChooser();
 
     /* Path follower */
-   private final SendableChooser<Command> autoChooser;
-   private final SendableChooser<Command> autoChooser2;
+    private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<Command> autoChooser2;
+
     public RobotContainer() {
+
+        //PATHPLANNER AUTOS
         autoChooser = AutoBuilder.buildAutoChooser("1");
         autoChooser2 = AutoBuilder.buildAutoChooser("2");
         //SmartDashboard.putData("Auto Mode", autoChooser);
         //NamedCommands.registerCommand("Leftaim", new AutoAlignLeft(photon, driving));
         //NamedCommands.registerCommand("Rightaim", new AutoAlignRight(photon, driving));
+        //i get a sneaking suspicion this does not actually go to level one, does it. sigh.
         NamedCommands.registerCommand("L1", new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));
         NamedCommands.registerCommand("Intake", new Intake(effector, pivot));
+
+
+         //CHOREO AUTOS
+         autoFactory = drivetrain.createAutoFactory();
+         autoRoutines = new AutoRoutines(autoFactory, effector, pivot, elevator, driving, photon);
+         /*add auto routines */
+         SmartDashboard.putData("Choreo AutoChooser", autoChooserC);
+         autoChooserC.addRoutine("test", autoRoutines::testPath);
+         autoChooserC.addRoutine("just move", autoRoutines::basicAuto);
+         autoChooserC.addRoutine("left auto", autoRoutines::autoLeft);
+         autoChooserC.addRoutine("right auto", autoRoutines::autoRight);
+         autoChooserC.addRoutine("right test auto", autoRoutines::testRight);
+         
+   
 
         configureBindings();
     }
 
     private void configureBindings() {
+        //NOTE: why are these all made on the spot? isn't that bad practice?
 
+        //elevator controls. op
         andrew.povUp().onTrue(new ElevatorUp(elevator));
         andrew.povDown().onTrue(new ElevatorDown(elevator));
+
+        //pivot/"wrist". op
         andrew.povRight().onTrue(new ArmUp(pivot));
         andrew.povLeft().onTrue(new ArmDown(pivot));
-        //andrew.povUp().onTrue(new L4(elevator));
-        //joystick.povRight().onTrue(new L3(elevator));
-        //joystick.povDown().toggleOnTrue(new L2(elevator, pivot, effector));
-        //joystick.povLeft().onTrue(new L1(elevator));
 
-        //joystick.povUp().toggleOnTrue(new L4(elevator, pivot, effector));
-        //joystick.povRight().toggleOnTrue(new L3(elevator, pivot, effector));
-        //joystick.povLeft().toggleOnTrue(new L2(elevator, pivot, effector));
-        //joystick.povDown().toggleOnTrue(new L1(elevator));
-
-        //joystick.povDown().onTrue(new Intake(effector, pivot));
+        //camera assisted aiming. driver
         joystick.leftBumper().toggleOnTrue(new AutoAlignLeft(photon, driving));
         joystick.rightBumper().toggleOnTrue(new AutoAlignRight(photon, driving));
 
-
-
+        //intake/outake. driver
         joystick.b().toggleOnTrue(new Intake(effector, pivot));
         joystick.a().toggleOnTrue(new Outake(effector, pivot));
+
+        //NOTE: ask what the actuator is. might be the intake pneumatics? says servos in subsystem...
+        //"actuator". driver
         joystick.start().toggleOnTrue(new ActuateUp(actuation));
         joystick.back().toggleOnTrue(new ActuateDown(actuation));
 
+        //run intake. op
         andrew.b().whileTrue(new RunIntake(effector, 0.3));
         andrew.a().whileTrue(new RunIntake(effector, -0.3));
-        //joystick.povRight().onTrue(new ArmUp(pivot));
-        //joystick.povLeft().onTrue(new ArmDown(pivot));
-        joystick.povLeft().onTrue(new L2(elevator, pivot, effector, 8.42, -2.6));//L2
-
-        joystick.povRight().onTrue(new L2(elevator, pivot, effector, 16.72, -2.6));//L3
-        joystick.povUp().onTrue(new L2(elevator, pivot, effector, 31.62, -2.7));//L4 2.7
-        joystick.x().onTrue(new L2(elevator, pivot, effector, 31.5, -2.75));
-
+        
+        //d-pad elevator position control. driver
+        joystick.povLeft().onTrue(new ElevatorToPosition(elevator, pivot, effector, 8.42, -2.6));//L2
+        joystick.povRight().onTrue(new ElevatorToPosition(elevator, pivot, effector, 16.72, -2.6));//L3
+        joystick.povUp().onTrue(new ElevatorToPosition(elevator, pivot, effector, 31.62, -2.7));//L4 2.7
+        joystick.x().onTrue(new ElevatorToPosition(elevator, pivot, effector, 31.5, -2.75));
         joystick.povDown().toggleOnTrue(new L1(elevator, pivot).alongWith(new Intake(effector, pivot)));//L1
         
-        //joystick.povLeft().toggleOnTrue(new RunIntake(effector));
-        
+   
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        /*drivetrain.setDefaultCommand(
+        drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
                 drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
-        );*/
-
-        //joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        /*joystick.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
-        ));*/
-
-        /*joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0.5).withVelocityY(0))
         );
-        joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(-0.5).withVelocityY(0))
-        );*/
+
+        //I'm keeping these around we might need them
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
@@ -174,12 +171,12 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        /* Run the path selected from the auto chooser */
-        //return autoChooser.getSelected();
-        //return null;
-        return autoChooser.getSelected().andThen((new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector, 31.5, -2.9))).andThen(new Outake(effector, pivot).andThen(new L1(elevator, pivot)))).andThen(new L1(elevator, pivot).andThen((new Intake(effector, pivot))));
+       
+        //choreo auto. comment out and uncomment the below for pathplanner
+        return autoChooserC.selectedCommand();
 
-        //return new L1(elevator, pivot).andThen(autoChooser2.getSelected());
-        //return autoChooser.getSelected();
+        //pathplanner auto. ben please make a proper autos class for pathplanner i beg of you
+        // return autoChooser.getSelected().andThen((new AutoAlignLeft(photon, driving).alongWith(new L2(elevator, pivot, effector, 31.5, -2.9))).andThen(new Outake(effector, pivot).andThen(new L1(elevator, pivot)))).andThen(new L1(elevator, pivot).andThen((new Intake(effector, pivot))));
+
     }
 }

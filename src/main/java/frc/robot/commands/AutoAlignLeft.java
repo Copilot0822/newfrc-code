@@ -1,14 +1,9 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.generated.TunerConstants_other;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Driving;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.PhotonVision;
 
 import static edu.wpi.first.units.Units.Rotation;
@@ -26,34 +21,23 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
+//TODO: remove unused imports. ensure nothing commented would be coming back
 
 
-
-/** An example command that uses an example subsystem. */
 public class AutoAlignLeft extends Command {
+  //unsure if necessary, don't remove at comp
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  //private final ExampleSubsystem m_subsystem;
-  //public CommandSwerveDrivetrain drivetrains = TunerConstants.createDrivetrain(); // My drivetrain
-  //private StopWatch m_StopWatch;
+
   private final PhotonVision m_PhotonVision;
   private final Driving m_Driving;
-  //MotionMagicController rotationPID;
 
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
+
   public AutoAlignLeft(PhotonVision photonVision, Driving driving) {
-    //m_subsystem = subsystem;
-    //drivetrain = drivetrain;
     
     m_PhotonVision = photonVision;
     m_Driving = driving;
     
-    // Use addRequirements() here to declare subsystem dependencies.
-    //addRequirements(subsystem);
-    //addRequirements(drivetrain);
+    //subsystem dependencies.
     addRequirements(photonVision);
     addRequirements(driving);
     
@@ -73,16 +57,14 @@ public class AutoAlignLeft extends Command {
     m_Driving.setRotation(0);
     m_Driving.setX(0);
     m_Driving.setY(0);
-    mode = false;
-    outputVelocityX = 0;
 
+    mode = false;
+
+    outputVelocityX = 0;
     outputVelocityY = 0;
+
     done = false;
     time = System.currentTimeMillis();
-
-    //m_StopWatch.start();
-
-    //rotationPID = new MotionMagicController(0.019, 0, 0, 0, 0, 0);
     
   }
 
@@ -135,27 +117,22 @@ public class AutoAlignLeft extends Command {
         
         m_Driving.setRotation(output);
 
+        //clever little timer, ends after certain amount of time for sure
+        //here so we don't accidentally shoot it into the bot
         if(System.currentTimeMillis()-time > 10000){
           done = true;   
         }
 
         
-        //System.out.println( "VX:"+outputVelocityX+" VY:"+outputVelocityY + " output:"+ output);
-
+        //System.out.println( "VX:"+outputVelocityX+" VY:"+outputVelocityY + " output:"+ output)
 
     }
     else{
       m_Driving.setRotation(0);
     }
-       
-    
-    
-    //SmartDashboard.putNumber("sigma", x);
    }
-   
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
 
@@ -163,11 +140,12 @@ public class AutoAlignLeft extends Command {
     m_Driving.setX(0);
     m_Driving.setY(0);
     m_Driving.setRotation(0);
+    //TODO: set print to something more logical, and distinct from elevator print
     System.out.println("Sigma");
   }
 
 
-  // Returns true when the command should end.
+  //ends on that timer, or is interrupted
   @Override
   public boolean isFinished() {
     return done;

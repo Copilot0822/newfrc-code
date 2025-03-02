@@ -5,63 +5,45 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.Elevator1;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.PivotArm;
 import edu.wpi.first.wpilibj2.command.Command;
 
-/** An example command that uses an example subsystem. */
 public class L1 extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  //private final ExampleSubsystem m_subsystem;
   private final Elevator1 m_elevator;
   private final PivotArm m_PivotArm;
-  private double time;
   
+  private boolean done;
 
 
-
-  /**
-   * Creates a new ExampleCommand.
-   *
-   * @param subsystem The subsystem used by this command.
-   */
   public L1(Elevator1 elevator, PivotArm pivotArm) {
-    //m_subsystem = subsystem;
     m_elevator = elevator;
     m_PivotArm = pivotArm;
-    // Use addRequirements() here to declare subsystem dependencies.
+
+    //subsystem dependencies.
     addRequirements(elevator);
     addRequirements(pivotArm);
-    //time = System.currentTimeMillis();
 
   }
-  private boolean done;
-  // Called when the command is initially scheduled.
+
   @Override
   public void initialize() {
-    //m_elevator.gotolevel(2);
     m_elevator.gotolevel(1);
     done = false;
 
   }
 
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    //if elevator at position and not marked done, mark done and move arm
     if(m_elevator.getRealPostion()<5 && !done){
       m_PivotArm.goTo(-6.5);
       done = true;
-
     }
   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    //m_PivotArm.goTo(3.125);
-  }
+  //no end action, no override of super end command needed
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return done;

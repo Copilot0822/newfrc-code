@@ -38,11 +38,11 @@ public final class Constants {
   public static final double rightForwardOffset = 0.4;
 
   public static final double poseAmbigMax = 0.5;
-  public static final double rotationalrightoffset = 2.3;
+  public static final double rotationalrightoffset = -2.3;
   public static final double rotationalleftoffset = -1.25;
   public static final double maxRotationalOutput = 0.1;
   public static final double maxTranslationalOutput = 0.5;
-  public static final double modeChangeLimit = 0.01;
+  public static final double modeChangeLimit = 0.2;
   public static final double scaleRotation = 4;
   public static final double scaleTranslation = 4;
   
